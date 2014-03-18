@@ -33,7 +33,56 @@
   \end{itemize}
 \item Thread may not have independent access to computational
   resources. 
-\item 
+\item Middleware provides transparency to hardware resources.
+\item Examples of distributed objects are: CORBA, DCOM, Java RMI\@.
+\item For messaging/event based communication, the explicitly timeout
+  mechanism is required.
+\item Networks of Computers. 
+  \begin{itemize}
+  \item Network core: Interconnected global ISPs. Well connected
+    topology. High bandwidth capacity.
+  \item Network edge. Local ISPs. Local networks in homes,
+    institutes. And\ldots mobile networks. Something about the
+    last-mile congestion.
+  \end{itemize}
+\item Virtualization broadly refers to abstraction of resources in
+  many aspects of computing. Concepts are: Hypervisor, Hardware
+  virtualization, Software virtualization.
+\item Virtualization can reduce operation costs by consolidating
+  services to fewer number of physical machines.
+\item Application of overlay networks are: robust networking,
+  multicasting, and VoIP\@.
+\item Consistency ensures: Transparency among distributed processes
+  and Correctness of data transactions spanning multiple databases.
+\item To guarantee consistency among distributed processes, it is
+  necessary to provide mutual exclusion when accessing a critical
+  section. For mutual exclusion, there are several types of algorithms,
+  centralized, distributed, or token ring.
+\item Problems for these types of algorithms: centralized, coordinator
+  crash; distributed, process crash; token ring, lost token and
+  process crash.
+% \item Life is hard but you have to get used to it. Victory or death,
+%   choose one. I choose not to be killed.
+\item Transactions. We consider processes accessing multiple disparate
+  databases. A transaction is an agreement between separate entities
+  or objects, often involving the exchange of items of value.
+\item Properties of transactions:
+  ACID\@. Atomic. Consistent. Isolated. Durable. 
+\item Three-Phase Commit: add time-out into two-phase then we could
+  abort prevent locking resource.
+\item Hiding failure from other processes using redundancy: time
+  redundancy, physical redundancy and information redundancy.
+\item Recovery tries to correct errors due to faults. They could be
+  divided into two types: backward and forward.
+  \begin{itemize}
+  \item Backward: checkpointing, retransmit lost packages.
+  \item Forward: error=correction codes.
+  \end{itemize}
+\item Challenges for wireless communication: noise, shared
+  communication medium, limited spectrum, mobility, energy
+  efficiency.
+\item  
+
 \end{itemize}
 
 \end{document}

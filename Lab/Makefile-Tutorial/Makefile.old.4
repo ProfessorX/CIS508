@@ -1,0 +1,18 @@
+CC = gcc
+CFLAGS = -I.
+DEPS = hellomake.h
+OBJ = hellomake.o hellofunc.o
+
+
+
+#%.o: %.c $(DEPS)
+#	$(CC) -c -o $@ $< $(CFLAGS)
+
+#hellomake: hellomake.o hellofunc.o
+#	gcc -o hellomake hellomake.o hellofunc.o -I.
+
+%.o: %.c $(DEPS)
+	$(cc) -c -o $@ $< $(CFLAGS)
+
+hellomake: $(OBJ)
+	gcc -o $@ $^ $(CFLAGS)

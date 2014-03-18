@@ -1,2 +1,1 @@
-import sqlite3
-coon = sqlite3.connect(
+print("Life is awesome in UAE!")
