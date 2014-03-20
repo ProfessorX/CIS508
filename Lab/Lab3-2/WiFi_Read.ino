@@ -14,11 +14,17 @@ char ssid[] = "MICLOUD";
 char pass[] = "";  // Open institute, open net
 
 int status = WL_IDLE_STATUS;
+
 // IPAddress server()
 char server[] = "ec2-54-80-134-83.compute-1.amazonaws.com";
 
 // Initialize the WiFi client library
 WiFiClient client;
+const unsigned long requestInterval = 30*1000;  // delay between
+                                                // requests
+
+unsigned long lastAttemptTime = 0;  // last time you connected to the
+                                    // server, in milliseconds
 
 // Variables to help in parsing XML received
 String currentLine = "";
@@ -57,24 +63,16 @@ void setup() {
 
     Serial.println("Connected to WiFi");
     printWifiStatus();
+    connectToServer();
 
-    Serial.println("\nStarting connection to server");
-    // if you get a connection, report back via serial
-    if (client.connect(server, 80)) {
-        Serial.println("Connected to server");
-        // make a HTTP request
-        client.println("GET /php/get_mail.php HTTP/1.1");
-        client.println("Host:ec2-54-80-134-83.compute-1.amazonaws.com");
-        client.println("Connection close");
-        client.println();
-    }
 
 }
 
 void loop() {
     // if there are coming bytes available 
     // from the server, read and print them
-    while (client.available()) {
+    if (client.connected()) {
+        if (client.available()) {
         char c = client.read();
         // Serial.write(c);
         currentLine += c;
@@ -117,12 +115,20 @@ void loop() {
                     digitalWrite(led, LOW);
                     Serial.println("LED Low");
                     delay(1000);
+                    msgs--;  // added so we can keep the if-else
+                             // loop. Would be much clearer by using
+                             // for loop
                 }
             }
         }
+        }
+        else if (millis() - lastAttemptTime > requestInterval) {
+            connectToServer();  // time out, reconnect
+        }
     }
 
-
+    
+    
 
     // if the server has been disconnected, stop this poor client
     if (!client.connected()) {
@@ -133,6 +139,23 @@ void loop() {
         // do nothing? do something please.
         while (true);
     }
+}
+
+void connectToServer() {
+    Serial.println("\nStarting connection to server");
+    // if you get a connection, report back via serial
+    if (client.connect(server, 80)) {
+        Serial.println("Connected to server");
+        // make a HTTP request
+        client.println("GET /php/get_mail.php HTTP/1.1");
+        client.println("Host:ec2-54-80-134-83.compute-1.amazonaws.com");
+        client.println("Connection close");
+        client.println();
+    }
+
+    // note the time of this connection attempt in milliseconds
+    lastAttemptTime = millis();  // this does not suck and may bring
+                                 // good results
 }
 
 void printWifiStatus() {
@@ -154,3 +177,7 @@ void printWifiStatus() {
 
 // TODO: Extract the process implemented in loop() function. Reference
 // would be the Arduino IDE itself.
+
+/*
+ * Comment: From the Arduino example files there are a lot to learn.
+ */
