@@ -1,3 +1,10 @@
+/*
+ * Always be self-motivating.
+ * Life is short. Please stay awake for it.
+ */
+
+
+
 #include <SPI.h>
 #include <WiFi.h>  // WiFi library
 
@@ -67,6 +74,83 @@ void setup() {
 void loop() {
     // if there are coming bytes available 
     // from the server, read and print them
-    
+    while (client.available()) {
+        char c = client.read();
+        // Serial.write(c);
+        currentLine += c;
 
+        if (c == '\n') {
+            currentLine = "";
+        }
+
+        if (currentLine.endsWith("<fullcount>")) {
+            fountIt = true;
+            // break out of the loop so this character is not added to
+            // <string>
+            return;
+        }
+
+        if (fountIt) {
+            if (c != '<') {
+                unread += c;
+            }
+            else {
+                // if you got a '<' character, you've read the number
+                // indicating unread msgs. (WHY?)
+                fountIt = false;
+                Serial.println(unread + " unread messages.");
+
+                // convert "unread" string to integers (aka, chars)
+                char t[unread.length() + 1];
+                unread.toCharArray(t, (sizeof(t)));
+                int msgs = atoi(t);  // array to integer
+
+                // blink the led 'unread' number of times
+                // According to the request, the [if condition] part
+                // should be modified.
+                if (msgs > 0) { // this line should be modified
+                    // turn the led on
+                    digitalWrite(led, HIGH);
+                    Serial.println("LED High");
+                    delay(3000);  // Yet another delay for 3 seconds
+                    // turn the led off
+                    digitalWrite(led, LOW);
+                    Serial.println("LED Low");
+                    delay(1000);
+                }
+            }
+        }
+    }
+
+
+
+    // if the server has been disconnected, stop this poor client
+    if (!client.connected()) {
+        Serial.println();
+        Serial.println("Disconnecting from server.");
+        client.stop();
+
+        // do nothing? do something please.
+        while (true);
+    }
 }
+
+void printWifiStatus() {
+    // print the SSID of the network you're attached to
+    Serial.print("SSID:  ");
+    Serial.println(WiFi.SSID());
+
+    // print your WiFi shield's IP address
+    IPAddress ip = WiFi.localIP();
+    Serial.print("IP Address:  ");
+    Serial.println(ip);
+
+    // print the received signal strength
+    long rssi = WiFi.RSSI();
+    Serial.print("Signal strength (RSSI):  ");
+    Serial.print(rssi);
+    Serial.println("  dBm");
+}
+
+// TODO: Extract the process implemented in loop() function. Reference
+// would be the Arduino IDE itself.
