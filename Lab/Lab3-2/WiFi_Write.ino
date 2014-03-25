@@ -4,10 +4,16 @@
  */
 
 
-
+// Libraries
 #include <SPI.h>
 #include <WiFi.h>  // WiFi library
+#include "DHT.h"
 
+// Macros
+#define DHTPIN 2
+#define DHTTYPE DHT22
+
+// Housekeeping
 char ssid[] = "MICLOUD";
 char pass[] = "";
 
@@ -16,8 +22,10 @@ char server[] = "ec2-54-80-134-83.compute-1.amazonaws.com";
 
 // Initialize the WiFi client library
 WiFiClient client;
-
+DHT dht(DHTPIN, DHTTYPE);
 double dummyValue = 1989.64;
+float TEMP_READING = 0.0;
+
 
 void setup() {
     Serial.begin(9600);
@@ -52,8 +60,9 @@ void loop() {
         Serial.println("Arduino: forming HTTP request messages...");
 
         // send data to the server through GET request
-        client.print("GET /php/sensor_db.php?sensortype=dummySensor&reading=");
-        client.print(dummyValue);
+        client.print("GET /php/sensor_db.php?sensortype=temperature&reading=");       
+        /* client.print("GET /php/sensor_view.php?sensortype=Temp&reading="); */
+        client.print(readTemperature());
         client.println(" HTTP/1.1");
         client.println("Host: ec2-54-82-125-42.compute-1.amazonaws.com");
         client.println();
@@ -77,16 +86,41 @@ void loop() {
             Serial.println("Arduino: no response received / no response received in time");
         }
 
-        client.stop();
+
+    }
+    else if (millis() - lastAttemptTime > requestInterval){
+        connectToServer();  // time out, reconnect
+    }
+    else {
+        ;  // do nothing here
     }
 
     // do nothing, just loop forever
-    while (true);
+    /* while (true); */
 }
 
+float readTemperature() {
+    TEMP_READING = dht.readTemperature();
+    return TEMP_READING;
 
+}
 
+void connectToServer() {
+    Serial.println("\nStarting connection to server");
+    // if you get a connection, report back via serial
+    if (client.connect(server, 80)) {
+        Serial.println("Connected to server");
+        // make a HTTP request
+        client.println("GET /php/get_mail.php HTTP/1.1");
+        client.println("Host:ec2-54-80-134-83.compute-1.amazonaws.com");
+        client.println("Connection close");
+        client.println();
+    }
 
+    // note the time of this connection attempt in milliseconds
+    lastAttemptTime = millis();  // this does not suck and may bring
+                                 // good results    
+}
 
 void printWifiStatus() {
     // print the SSID of the network you're attached to

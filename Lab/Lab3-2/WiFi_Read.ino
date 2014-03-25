@@ -121,24 +121,28 @@ void loop() {
                 }
             }
         }
-        }
-        else if (millis() - lastAttemptTime > requestInterval) {
-            connectToServer();  // time out, reconnect
-        }
+        }      
     }
+    else if (millis() - lastAttemptTime > requestInterval) {
+            connectToServer();  // time out, reconnect
+    }
+    else {
+        ;  // do nothing
+    }
+
 
     
     
 
     // if the server has been disconnected, stop this poor client
-    if (!client.connected()) {
-        Serial.println();
-        Serial.println("Disconnecting from server.");
-        client.stop();
+    /* if (!client.connected()) { */
+    /*     Serial.println(); */
+    /*     Serial.println("Disconnecting from server."); */
+    /*     client.stop(); */
 
-        // do nothing? do something please.
-        while (true);
-    }
+    /*     // do nothing? do something please. */
+    /*     while (true); */
+    /* } */
 }
 
 void connectToServer() {
